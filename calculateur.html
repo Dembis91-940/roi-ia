@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur de ROI IA — Audit gratuit en 10 questions | ROI·IA</title>
+<meta name="description" content="Audit de maturité IA gratuit en 10 questions : score sur 100, estimation de vos gains ou pertes en euros par mois, 3 recommandations personnalisées. Pour PME de 10 à 200 salariés.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a1412;
+  --surface:#0f1e1a;
+  --surface-2:#122621;
+  --border:rgba(52,211,153,.14);
+  --border-strong:rgba(52,211,153,.32);
+  --mint:#34d399;
+  --teal:#2dd4bf;
+  --emerald:#10b981;
+  --turquoise:#14b8a6;
+  --ink:#ecfdf5;
+  --muted:#8fb3a6;
+  --muted-2:#5d8073;
+  --rose:#fb7185;
+  --amber:#fbbf24;
+  --radius:14px;
+  --font-display:'Space Grotesk',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--font-body);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(52,211,153,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(52,211,153,.045) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 100%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(640px 420px at 15% -6%,rgba(16,185,129,.12),transparent 70%),
+    radial-gradient(720px 480px at 85% 10%,rgba(20,184,166,.09),transparent 70%);
+}
+::selection{background:rgba(52,211,153,.3);color:#fff}
+a{color:var(--mint);text-decoration:none}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--font-display);font-weight:600;font-size:15px;
+  border-radius:10px;cursor:pointer;border:1px solid transparent;
+  transition:transform .18s,box-shadow .18s,background .18s,border-color .18s;
+  text-decoration:none;white-space:nowrap;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--mint),var(--teal));color:#04261d;padding:13px 24px;
+  box-shadow:0 6px 24px -8px rgba(52,211,153,.45);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 30px -8px rgba(52,211,153,.55);color:#04261d}
+.btn-ghost{background:transparent;color:var(--mint);border-color:var(--border-strong);padding:13px 24px}
+.btn-ghost:hover{border-color:var(--mint);transform:translateY(-1px);color:var(--mint)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+
+/* ---------- Header ---------- */
+header{
+  position:sticky;top:0;z-index:50;background:rgba(10,20,18,.85);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--border);
+}
+.nav{display:flex;align-items:center;gap:24px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:-.02em;color:var(--ink)}
+.brand svg{width:24px;height:24px}
+.brand em{font-style:normal;color:var(--mint)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:18px}
+.nav-right a{color:var(--muted);font-size:14px;font-weight:500}
+.nav-right a:hover{color:var(--mint)}
+
+/* ---------- Quiz ---------- */
+.quiz-sec{padding:56px 0 90px}
+.quiz-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:18px}
+.quiz-count{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.quiz-count b{color:var(--mint);font-weight:600;font-size:15px}
+.dim-tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);border:1px solid var(--border-strong);border-radius:999px;padding:5px 12px;background:rgba(45,212,191,.06)}
+.progress{height:6px;border-radius:3px;background:rgba(52,211,153,.1);margin-bottom:34px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,var(--mint),var(--turquoise));transition:width .45s cubic-bezier(.22,1,.36,1)}
+.quiz-card{
+  background:var(--surface);border:1px solid var(--border-strong);border-radius:20px;
+  padding:38px 38px 30px;box-shadow:0 30px 70px -30px rgba(0,0,0,.6);
+  transition:opacity .28s,transform .28s;
+}
+.quiz-card.leaving{opacity:0;transform:translateX(-14px)}
+.quiz-card.entering{opacity:0;transform:translateX(14px)}
+.quiz-card h1{font-family:var(--font-display);font-size:clamp(22px,2.6vw,28px);font-weight:700;letter-spacing:-.015em;line-height:1.25;margin-bottom:8px;text-wrap:balance}
+.quiz-help{color:var(--muted);font-size:14.5px;margin-bottom:26px;text-wrap:pretty}
+.options{display:grid;gap:11px}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt label{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(10,20,18,.5);border:1px solid var(--border);border-radius:12px;
+  padding:15px 18px;cursor:pointer;font-size:15.5px;color:var(--ink);
+  transition:border-color .18s,background .18s,transform .15s;
+}
+.opt label::before{
+  content:"";width:18px;height:18px;border-radius:50%;flex-shrink:0;
+  border:2px solid var(--muted-2);transition:border-color .18s,background .18s,box-shadow .18s;
+}
+.opt label:hover{border-color:var(--border-strong);background:rgba(52,211,153,.04);transform:translateX(2px)}
+.opt input:checked + label{
+  border-color:var(--mint);background:rgba(52,211,153,.07);
+  box-shadow:0 0 0 1px rgba(52,211,153,.25) inset;
+}
+.opt input:checked + label::before{
+  border-color:var(--mint);background:var(--mint);
+  box-shadow:inset 0 0 0 4px var(--surface);
+}
+.opt input:focus-visible + label{outline:2px solid var(--mint);outline-offset:2px}
+.opt .opt-note{display:block;color:var(--muted-2);font-size:12.5px;margin-top:2px}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:14px}
+.quiz-nav .btn{padding:11px 20px;font-size:14px}
+.quiz-foot{margin-top:16px;color:var(--muted-2);font-size:12.5px;text-align:center}
+
+/* ---------- Résultats ---------- */
+.results-sec{display:none;padding:56px 0 90px}
+.results-sec.show{display:block}
+.results-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:26px}
+.results-head h1{font-family:var(--font-display);font-size:clamp(24px,3vw,32px);font-weight:700;letter-spacing:-.02em;text-wrap:balance}
+.results-head .level-lbl{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mint);border:1px solid var(--border-strong);border-radius:999px;padding:7px 14px;background:rgba(52,211,153,.07);white-space:nowrap}
+.r-grid{display:grid;grid-template-columns:340px 1fr;gap:18px;margin-bottom:18px}
+.r-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
+.r-card-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted-2);font-weight:600;margin-bottom:14px}
+/* Jauge principale */
+.gauge-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 0 2px}
+.gauge-svg{width:240px;height:132px;overflow:visible}
+.gauge-track{fill:none;stroke:rgba(52,211,153,.12);stroke-width:13;stroke-linecap:round}
+.gauge-fill{fill:none;stroke-width:13;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset 1.5s cubic-bezier(.22,1,.36,1)}
+.gauge-fill.lvl-0{stroke:#fbbf24}
+.gauge-fill.lvl-1{stroke:#2dd4bf}
+.gauge-fill.lvl-2{stroke:#34d399}
+.gauge-fill.lvl-3{stroke:#10b981}
+.gauge-num{font-family:var(--mono);font-weight:600;font-size:44px;letter-spacing:-.03em;margin-top:-20px}
+.gauge-sub{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.level-name{font-family:var(--font-display);font-weight:700;font-size:19px;margin-top:14px}
+.level-desc{color:var(--muted);font-size:13.5px;text-align:center;margin-top:6px;text-wrap:pretty}
+/* Financier */
+.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
+.fin-item{background:rgba(10,20,18,.5);border:1px solid var(--border);border-radius:11px;padding:13px 15px}
+.fin-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-2);font-weight:600;margin-bottom:5px}
+.fin-val{font-family:var(--mono);font-weight:600;font-size:21px;letter-spacing:-.02em}
+.fin-val.mint{color:var(--mint)}
+.fin-val.rose{color:var(--rose)}
+.fin-val.amber{color:var(--amber)}
+.fin-sub{display:block;font-size:11.5px;color:var(--muted-2);margin-top:3px}
+.fin-total{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  background:rgba(10,20,18,.5);border:1px solid var(--border-strong);border-radius:11px;padding:15px 16px;
+}
+.fin-total .t-label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.fin-total .t-val{font-family:var(--mono);font-weight:700;font-size:26px;letter-spacing:-.02em}
+.fin-total .t-val.mint{color:var(--mint)}
+.fin-total .t-val.rose{color:var(--rose)}
+.roi-pill{
+  display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+  font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--mint);
+  border:1px solid var(--border-strong);border-radius:999px;padding:6px 12px;background:rgba(52,211,153,.06);
+}
+.roi-pill.neg{color:var(--rose);background:rgba(251,113,133,.06)}
+.hypo{margin-top:14px;color:var(--muted-2);font-size:11.5px;line-height:1.6;text-wrap:pretty}
+/* Barres dimensions */
+.dim-row{display:grid;grid-template-columns:130px 1fr 56px;align-items:center;gap:14px;margin-bottom:13px}
+.dim-row:last-child{margin-bottom:0}
+.dim-name{font-size:13.5px;color:var(--muted);font-weight:500}
+.dim-bar{height:9px;border-radius:5px;background:rgba(52,211,153,.1);overflow:hidden}
+.dim-bar i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--mint),var(--turquoise));transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+.dim-val{font-family:var(--mono);font-size:13px;color:var(--ink);text-align:right}
+/* Recommandations */
+.recos{margin:18px 0}
+.recos .r-card-label{margin-bottom:18px}
+.reco{
+  display:flex;gap:16px;padding:18px 0;border-top:1px solid var(--border);
+}
+.reco:first-of-type{border-top:none}
+.reco-n{font-family:var(--mono);font-weight:600;font-size:13px;color:var(--teal);border:1px solid var(--border-strong);border-radius:9px;padding:6px 10px;height:fit-content;background:rgba(45,212,191,.06);flex-shrink:0}
+.reco h3{font-family:var(--font-display);font-size:16px;font-weight:600;margin-bottom:5px;letter-spacing:-.01em}
+.reco p{color:var(--muted);font-size:14px;text-wrap:pretty}
+/* CTA offres */
+.cta-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.cta-offer{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px 24px;transition:border-color .25s,transform .25s}
+.cta-offer:hover{border-color:var(--border-strong);transform:translateY(-3px)}
+.cta-offer.featured{background:linear-gradient(180deg,rgba(16,185,129,.09),var(--surface) 45%);border-color:rgba(52,211,153,.4)}
+.cta-offer h3{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:4px}
+.cta-offer .p{font-family:var(--font-display);font-weight:700;font-size:30px;letter-spacing:-.02em;margin:6px 0 2px}
+.cta-offer .p small{font-size:13px;color:var(--muted);font-weight:600}
+.cta-offer ul{list-style:none;margin:14px 0 18px;display:grid;gap:7px}
+.cta-offer li{display:flex;gap:9px;color:var(--muted);font-size:13.5px}
+.cta-offer li::before{content:"✓";color:var(--mint);font-weight:700;font-family:var(--mono)}
+.cta-offer .btn{width:100%}
+/* Formulaire commande EmailJS */
+.order-form{background:var(--surface);border:1px solid var(--border-strong);border-radius:16px;padding:26px;display:none;margin-bottom:18px}
+.order-form.show{display:grid;gap:15px}
+.order-form h3{font-family:var(--font-display);font-size:17px;font-weight:700}
+.order-form .of-sub{color:var(--muted);font-size:13.5px;margin-top:-8px}
+.of-offer{display:flex;gap:10px;flex-wrap:wrap}
+.of-offer label{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-size:14px;color:var(--muted);
+  transition:border-color .18s,color .18s,background .18s;
+}
+.of-offer input{position:absolute;opacity:0}
+.of-offer input:checked + label{border-color:var(--mint);color:var(--ink);background:rgba(52,211,153,.07)}
+.of-offer label b{color:var(--ink);font-family:var(--mono);font-weight:600}
+.of-field{display:grid;gap:6px}
+.of-field label{font-size:13px;font-weight:600}
+.of-field label span{color:var(--rose)}
+.of-field input{
+  background:rgba(10,20,18,.6);border:1px solid var(--border);border-radius:10px;
+  color:var(--ink);font-family:var(--font-body);font-size:15px;padding:11px 14px;width:100%;
+  transition:border-color .2s,box-shadow .2s;
+}
+.of-field input:focus{outline:none;border-color:var(--mint);box-shadow:0 0 0 3px rgba(52,211,153,.15)}
+.order-status{display:none;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.5}
+.order-status.ok{display:block;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);color:var(--mint)}
+.order-status.err{display:block;background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.35);color:var(--rose)}
+.order-status.loading{display:flex;align-items:center;gap:10px;background:rgba(45,212,191,.07);border:1px solid var(--border-strong);color:var(--teal)}
+.spinner{width:15px;height:15px;border:2px solid rgba(45,212,191,.3);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.results-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:26px}
+.results-actions .btn{padding:11px 20px;font-size:14px}
+
+/* ---------- Footer ---------- */
+footer{border-top:1px solid var(--border);background:rgba(12,24,21,.6);padding:32px 0}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;color:var(--muted-2);font-size:13px}
+
+/* ---------- Responsive ---------- */
+@media(max-width:860px){
+  .r-grid{grid-template-columns:1fr}
+  .cta-2{grid-template-columns:1fr}
+  .fin-grid{grid-template-columns:1fr}
+  .quiz-card{padding:26px 20px 22px}
+  .quiz-head{flex-direction:column;align-items:flex-start;gap:8px}
+  .dim-row{grid-template-columns:96px 1fr 46px;gap:10px}
+}
+
+/* ---------- Impression (sauvegarde PDF du résultat) ---------- */
+@media print{
+  body{background:#fff;color:#111}
+  body::before,body::after{display:none}
+  header,.quiz-sec,.results-actions,.order-form,.cta-2{display:none!important}
+  .results-sec{display:block!important;padding:0}
+  .r-card,.cta-offer,.fin-item,.fin-total{background:#fff;border:1px solid #d8e6e1;box-shadow:none}
+  .r-card-label,.fin-label,.fin-sub,.hypo,.level-desc,.dim-name{color:#5b6f68}
+  .gauge-fill{stroke-dashoffset:0!important;transition:none}
+  .dim-bar i{width:100%!important;transition:none}
+  .reco p,.cta-offer li{color:#333}
+  a{color:#0d6e58}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html" aria-label="ROI·IA — accueil">
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M16 3a13 13 0 1 0 13 13" stroke="#34d399" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M16 16 23.5 8.5" stroke="#2dd4bf" stroke-width="3.4" stroke-linecap="round"/>
+        <circle cx="16" cy="16" r="3" fill="#2dd4bf"/>
+      </svg>
+      ROI<em>·IA</em>
+    </a>
+    <div class="nav-right">
+      <a href="index.html#offres">Offres</a>
+      <a href="index.html">← Revenir à l'accueil</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ QUIZ ============ -->
+<section class="quiz-sec" id="quiz">
+  <div class="wrap">
+    <div class="quiz-head">
+      <span class="quiz-count">Question <b id="qCount">1</b>/10</span>
+      <span class="dim-tag" id="qDim">Adoption</span>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="qProgress"></i></div>
+    <div class="quiz-card" id="quizCard">
+      <h1 id="qTitle"></h1>
+      <p class="quiz-help" id="qHelp"></p>
+      <div class="options" id="qOptions" role="radiogroup" aria-label="Réponses possibles"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-ghost" id="btnPrev" type="button">← Précédent</button>
+        <button class="btn btn-primary" id="btnNext" type="button">Suivant →</button>
+      </div>
+      <p class="quiz-foot" id="quizFoot">Vos réponses restent dans votre navigateur — rien n'est envoyé avant la fin du quiz.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RÉSULTATS ============ -->
+<section class="results-sec" id="resultats">
+  <div class="wrap">
+    <div class="results-head">
+      <h1>Votre diagnostic de maturité ROI</h1>
+      <span class="level-lbl" id="levelLbl">—</span>
+    </div>
+
+    <div class="r-grid">
+      <!-- Jauge -->
+      <div class="r-card">
+        <span class="r-card-label">Score de maturité</span>
+        <div class="gauge-box">
+          <svg class="gauge-svg" viewBox="0 0 240 132">
+            <path class="gauge-track" d="M 40 110 A 80 80 0 0 1 200 110" pathLength="100"/>
+            <path class="gauge-fill" id="mainGauge" d="M 40 110 A 80 80 0 0 1 200 110" pathLength="100"/>
+          </svg>
+          <span class="gauge-num num" id="gaugeNum">0/100</span>
+          <span class="gauge-sub">Maturité ROI</span>
+        </div>
+        <p class="level-name" id="levelName">—</p>
+        <p class="level-desc" id="levelDesc"></p>
+      </div>
+
+      <!-- Financier -->
+      <div class="r-card">
+        <span class="r-card-label">Impact financier estimé</span>
+        <div class="fin-grid">
+          <div class="fin-item">
+            <span class="fin-label">Coût outils IA</span>
+            <span class="fin-val num" id="finCost">0 €</span>
+            <span class="fin-sub" id="finCostSub">abonnements mensuels</span>
+          </div>
+          <div class="fin-item">
+            <span class="fin-label">Valeur créée</span>
+            <span class="fin-val mint num" id="finValue">0 €</span>
+            <span class="fin-sub" id="finValueSub">temps réalloué + qualité</span>
+          </div>
+          <div class="fin-item">
+            <span class="fin-label">Temps réalloué</span>
+            <span class="fin-val num" id="finHours">0 h/mois</span>
+            <span class="fin-sub">≈ <span id="finHoursDetail">0 h</span> gagnées par semaine</span>
+          </div>
+          <div class="fin-item">
+            <span class="fin-label">Valeur qualité &amp; erreurs</span>
+            <span class="fin-val mint num" id="finQuality">0 €</span>
+            <span class="fin-sub">selon votre fréquence de mesure</span>
+          </div>
+        </div>
+        <div class="fin-total">
+          <span class="t-label">Gain ou perte net / mois</span>
+          <span class="t-val num" id="finNet">0 €</span>
+        </div>
+        <span class="roi-pill" id="roiPill">ROI estimé : —</span>
+        <p class="hypo" id="hypo">Hypothèses : coût chargé moyen 40 €/h en PME · taux de réallocation du temps gagné 65 % · gain qualité de 0,1 à 0,8 % du chiffre d'affaires mensuel selon la fréquence de mesure.</p>
+      </div>
+    </div>
+
+    <!-- Dimensions -->
+    <div class="r-card" style="margin-bottom:18px">
+      <span class="r-card-label">Vos notes par dimension (sur 100)</span>
+      <div class="dim-row">
+        <span class="dim-name">Adoption</span>
+        <div class="dim-bar"><i id="dimAdoption"></i></div>
+        <span class="dim-val num" id="dimAdoptionV">0</span>
+      </div>
+      <div class="dim-row">
+        <span class="dim-name">Structuration</span>
+        <div class="dim-bar"><i id="dimStructuration"></i></div>
+        <span class="dim-val num" id="dimStructurationV">0</span>
+      </div>
+      <div class="dim-row">
+        <span class="dim-name">Mesure</span>
+        <div class="dim-bar"><i id="dimMesure"></i></div>
+        <span class="dim-val num" id="dimMesureV">0</span>
+      </div>
+      <div class="dim-row">
+        <span class="dim-name">Impact</span>
+        <div class="dim-bar"><i id="dimImpact"></i></div>
+        <span class="dim-val num" id="dimImpactV">0</span>
+      </div>
+    </div>
+
+    <!-- Recommandations -->
+    <div class="r-card recos">
+      <span class="r-card-label">Vos 3 recommandations prioritaires</span>
+      <div id="recoList"></div>
+    </div>
+
+    <!-- CTA offres -->
+    <div class="cta-2">
+      <div class="cta-offer">
+        <h3>Rapport PDF complet</h3>
+        <p class="p">49&nbsp;€ <small>paiement unique</small></p>
+        <ul>
+          <li>Analyse détaillée service par service</li>
+          <li>Grille de calcul personnalisée (votre coût €/h)</li>
+          <li>Benchmark PME par secteur</li>
+          <li>10 recommandations priorisées par ROI</li>
+        </ul>
+        <button class="btn btn-primary" type="button" data-offer="rapport">Commander — 49&nbsp;€</button>
+      </div>
+      <div class="cta-offer featured">
+        <h3>Pack direction</h3>
+        <p class="p">99&nbsp;€ <small>paiement unique</small></p>
+        <ul>
+          <li>Rapport PDF complet inclus</li>
+          <li>Plan d'action 30 jours, semaine par semaine</li>
+          <li>1 session d'accompagnement de 45 min</li>
+          <li>Suivi des KPIs à J+30</li>
+        </ul>
+        <button class="btn btn-primary" type="button" data-offer="pack">Réserver — 99&nbsp;€</button>
+      </div>
+    </div>
+
+    <!-- Formulaire de commande EmailJS -->
+    <form class="order-form" id="orderForm" novalidate>
+      <h3 id="orderTitle">Commander le rapport PDF complet</h3>
+      <p class="of-sub" id="orderSub">Recevez un lien de paiement sécurisé par e-mail sous 1 h ouvrée, puis votre rapport sous 48 h.</p>
+      <div class="of-offer" role="radiogroup" aria-label="Offre choisie">
+        <input type="radio" name="offer" id="ofRapport" value="Rapport PDF complet (49 €)">
+        <label for="ofRapport">Rapport PDF complet — <b>49&nbsp;€</b></label>
+        <input type="radio" name="offer" id="ofPack" value="Pack direction (99 €)">
+        <label for="ofPack">Pack direction — <b>99&nbsp;€</b></label>
+      </div>
+      <div class="of-field">
+        <label for="of-site">Entreprise <span>*</span></label>
+        <input type="text" id="of-site" name="site" placeholder="Ex. : Dupont &amp; Fils" autocomplete="organization" required>
+      </div>
+      <div class="of-field">
+        <label for="of-name">Nom <span>*</span></label>
+        <input type="text" id="of-name" name="name" placeholder="Ex. : Marie Lambert" autocomplete="name" required>
+      </div>
+      <div class="of-field">
+        <label for="of-email">E-mail professionnel <span>*</span></label>
+        <input type="email" id="of-email" name="email" placeholder="marie.lambert@entreprise.fr" autocomplete="email" required>
+      </div>
+      <button type="submit" class="btn btn-primary" id="orderSubmit">Envoyer ma commande</button>
+      <div class="order-status" id="orderStatus" role="status" aria-live="polite"></div>
+      <p class="of-sub" style="margin-top:-6px">En envoyant ce formulaire, vous acceptez d'être recontacté au sujet de votre commande. Aucune revente de données.</p>
+    </form>
+
+    <div class="results-actions">
+      <button class="btn btn-ghost" type="button" id="btnPrint">🖨 Imprimer / sauvegarder en PDF</button>
+      <button class="btn btn-ghost" type="button" id="btnRestart">Recommencer l'audit</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap foot">
+    <span>© 2026 ROI·IA — Audit &amp; calculateur de ROI IA pour PME.</span>
+    <a href="index.html">← Retour à l'accueil</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+(function(){
+"use strict";
+var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ================= QUESTIONS ================= */
+var QUESTIONS = [
+  {
+    dim: "Adoption",
+    title: "Combien d'outils IA votre entreprise utilise-t-elle aujourd'hui ?",
+    help: "Comptez les abonnements actifs : assistants de rédaction, génération d'images, CRM augmenté, automatisation, transcription…",
+    options: [
+      { label: "Aucun", pts: 0 },
+      { label: "1 à 2 outils", pts: 1 },
+      { label: "3 à 5 outils", pts: 2 },
+      { label: "6 à 10 outils", pts: 3 },
+      { label: "Plus de 10 outils", pts: 4 }
+    ]
+  },
+  {
+    dim: "Investissement",
+    title: "Quel budget mensuel vos abonnements IA représentent-ils ?",
+    help: "Abonnements, licences et appels d'API confondus, hors salaires. C'est le coût que nous confronterons à la valeur créée.",
+    options: [
+      { label: "Moins de 100 €", pts: 0, cost: 60 },
+      { label: "100 à 500 €", pts: 1, cost: 300 },
+      { label: "500 à 2 000 €", pts: 2, cost: 1250 },
+      { label: "2 000 à 5 000 €", pts: 3, cost: 3500 },
+      { label: "Plus de 5 000 €", pts: 4, cost: 7500 }
+    ]
+  },
+  {
+    dim: "Impact",
+    title: "Combien d'heures par semaine votre équipe gagne-t-elle grâce à l'IA ?",
+    help: "Somme des temps gagnés sur l'ensemble de l'équipe : rédaction, saisie, recherche, traitement de données…",
+    options: [
+      { label: "0 heure", pts: 0, hours: 0 },
+      { label: "Moins de 5 h", pts: 1, hours: 2.5 },
+      { label: "5 à 15 h", pts: 2, hours: 10 },
+      { label: "15 à 40 h", pts: 3, hours: 27.5 },
+      { label: "Plus de 40 h", pts: 4, hours: 55 }
+    ]
+  },
+  {
+    dim: "Impact",
+    title: "Combien de tâches répétitives sont automatisées ou semi-automatisées ?",
+    help: "Exemples : comptes rendus de réunion, relances clients, classement d'e-mails, génération de devis, mise à jour de tableaux de bord.",
+    options: [
+      { label: "Aucune", pts: 0 },
+      { label: "1 à 3 tâches", pts: 1 },
+      { label: "4 à 10 tâches", pts: 2 },
+      { label: "11 à 25 tâches", pts: 3 },
+      { label: "Plus de 25 tâches", pts: 4 }
+    ]
+  },
+  {
+    dim: "Mesure",
+    title: "À quelle fréquence mesurez-vous les erreurs évitées ou la hausse de qualité liée à l'IA ?",
+    help: "Taux d'erreur, délais de réponse, satisfaction client, qualité de livraison… Ce critère alimente la valeur « qualité » de votre estimation.",
+    options: [
+      { label: "Jamais", pts: 0, quality: 0 },
+      { label: "Rarement", pts: 1, quality: 0.001 },
+      { label: "De temps en temps", pts: 2, quality: 0.0025 },
+      { label: "Régulièrement", pts: 3, quality: 0.005 },
+      { label: "Systématiquement (KPI suivi)", pts: 4, quality: 0.008 }
+    ]
+  },
+  {
+    dim: "Contexte",
+    title: "Quel est le chiffre d'affaires annuel de votre entreprise ?",
+    help: "Servira de référence pour le benchmark et pour chiffrer la valeur qualité. Estimation approximative suffisante.",
+    options: [
+      { label: "Moins de 1 M€", ca: 750000 },
+      { label: "1 à 3 M€", ca: 2000000 },
+      { label: "3 à 10 M€", ca: 6000000 },
+      { label: "10 à 30 M€", ca: 18000000 },
+      { label: "Plus de 30 M€", ca: 35000000 }
+    ]
+  },
+  {
+    dim: "Adoption",
+    title: "Quelle part de l'équipe utilise l'IA au quotidien ?",
+    help: "L'adoption réelle se mesure à l'usage quotidien, pas au nombre de licences achetées.",
+    options: [
+      { label: "Personne, ou presque", pts: 0 },
+      { label: "1 à 3 personnes", pts: 1 },
+      { label: "4 à 10 personnes", pts: 2 },
+      { label: "11 à 50 personnes", pts: 3 },
+      { label: "Plus de 50 personnes", pts: 4 }
+    ]
+  },
+  {
+    dim: "Structuration",
+    title: "Comment l'IA est-elle intégrée à vos processus ?",
+    help: "Un usage ponctuel sans documentation ne crée pas de patrimoine réutilisable.",
+    options: [
+      { label: "Usage ponctuel et informel", pts: 0 },
+      { label: "Quelques outils isolés, sans documentation", pts: 1 },
+      { label: "Workflows documentés sur certains services", pts: 2 },
+      { label: "Intégrée aux processus clés (vente, production, support)", pts: 3 },
+      { label: "Pilier de l'organisation (comité, roadmap, budget)", pts: 4 }
+    ]
+  },
+  {
+    dim: "Structuration",
+    title: "Existe-t-il un budget ou un responsable dédié à l'IA ?",
+    help: "Sans pilote ni enveloppe identifiés, les outils s'empilent sans que personne n'en réponde.",
+    options: [
+      { label: "Ni budget ni responsable", pts: 0 },
+      { label: "Budget informel, pas de responsable", pts: 1 },
+      { label: "Budget dédié, pas de responsable", pts: 2 },
+      { label: "Responsable identifié, budget partagé", pts: 3 },
+      { label: "Responsable dédié + budget propre", pts: 4 }
+    ]
+  },
+  {
+    dim: "Mesure",
+    title: "À quelle fréquence mesurez-vous le ROI de vos outils IA ?",
+    help: "Coûts confrontés aux gains, outil par outil. C'est le critère qui sépare les PME qui rentabilisent l'IA des autres.",
+    options: [
+      { label: "Jamais", pts: 0 },
+      { label: "Occasionnellement", pts: 1 },
+      { label: "Trimestriellement", pts: 2 },
+      { label: "Mensuellement", pts: 3 },
+      { label: "En continu (tableau de bord)", pts: 4 }
+    ]
+  }
+];
+
+/* ================= PARAMÈTRES FINANCIERS ================= */
+var HOURLY_VALUE = 40;      // coût chargé moyen €/h PME
+var REDEPLOY_RATE = 0.65;   // taux de réallocation du temps gagné
+var WEEKS_PER_MONTH = 4.33;
+
+/* ================= ÉTAT ================= */
+var answers = new Array(QUESTIONS.length).fill(null);
+var current = 0;
+var finished = false;
+var STORAGE_KEY = "roiia_quiz_v1";
+
+try {
+  var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+  if(saved && Array.isArray(saved) && saved.length === QUESTIONS.length){
+    saved.forEach(function(v, i){ if(typeof v === "number") answers[i] = v; });
+  }
+} catch(e){ /* localStorage indisponible : on continue sans */ }
+
+/* ================= DOM ================= */
+var qCard = document.getElementById("quizCard");
+var qCount = document.getElementById("qCount");
+var qDim = document.getElementById("qDim");
+var qProgress = document.getElementById("qProgress");
+var qTitle = document.getElementById("qTitle");
+var qHelp = document.getElementById("qHelp");
+var qOptions = document.getElementById("qOptions");
+var btnPrev = document.getElementById("btnPrev");
+var btnNext = document.getElementById("btnNext");
+var quizFoot = document.getElementById("quizFoot");
+
+/* ================= AFFICHAGE QUESTION ================= */
+function render(){
+  var q = QUESTIONS[current];
+  qCount.textContent = current + 1;
+  qDim.textContent = q.dim;
+  qProgress.style.width = ((current) / QUESTIONS.length * 100) + "%";
+  qTitle.textContent = q.title;
+  qHelp.textContent = q.help;
+  qOptions.innerHTML = "";
+  q.options.forEach(function(opt, i){
+    var wrap = document.createElement("div");
+    wrap.className = "opt";
+    var id = "opt_" + current + "_" + i;
+    var input = document.createElement("input");
+    input.type = "radio";
+    input.name = "q" + current;
+    input.id = id;
+    input.value = String(i);
+    input.setAttribute("aria-describedby", id + "_lbl");
+    if(answers[current] === i) input.checked = true;
+    var label = document.createElement("label");
+    label.htmlFor = id;
+    label.id = id + "_lbl";
+    var span = document.createElement("span");
+    span.textContent = opt.label;
+    if(typeof opt.cost === "number" && opt.cost > 0){
+      var note = document.createElement("span");
+      note.className = "opt-note";
+      note.textContent = "≈ " + fmtInt(opt.cost) + " €/mois retenu pour le calcul";
+      span.appendChild(note);
+    }
+    label.appendChild(span);
+    label.addEventListener("click", function(){ setTimeout(next, 320); });
+    wrap.appendChild(input);
+    wrap.appendChild(label);
+    qOptions.appendChild(wrap);
+  });
+  btnPrev.disabled = (current === 0);
+  btnNext.textContent = (current === QUESTIONS.length - 1) ? "Voir mes résultats" : "Suivant →";
+  quizFoot.textContent = (current === QUESTIONS.length - 1)
+    ? "Dernière question — le calcul est immédiat, sans inscription."
+    : "Vos réponses restent dans votre navigateur — rien n'est envoyé avant la fin du quiz.";
+}
+
+function goTo(i){
+  if(i < 0 || i >= QUESTIONS.length) return;
+  qCard.classList.add("leaving");
+  setTimeout(function(){
+    current = i;
+    render();
+    qCard.classList.remove("leaving");
+    qCard.classList.add("entering");
+    setTimeout(function(){ qCard.classList.remove("entering"); }, 30);
+    save();
+  }, 180);
+}
+function next(){
+  if(answers[current] === null){
+    var opt = qOptions.querySelector("input:checked");
+    if(!opt){ highlightFirst(); return; }
+    answers[current] = parseInt(opt.value, 10);
+  }
+  if(current === QUESTIONS.length - 1){
+    computeAndShow();
+  } else {
+    goTo(current + 1);
+  }
+}
+function highlightFirst(){
+  var first = qOptions.querySelector(".opt label");
+  if(first){
+    first.style.borderColor = "var(--rose)";
+    setTimeout(function(){ first.style.borderColor = ""; }, 900);
+  }
+}
+btnNext.addEventListener("click", next);
+btnPrev.addEventListener("click", function(){
+  if(current > 0) goTo(current - 1);
+});
+qOptions.addEventListener("change", function(ev){
+  if(ev.target && ev.target.matches("input[type=radio]")){
+    answers[current] = parseInt(ev.target.value, 10);
+    save();
+  }
+});
+
+function save(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(answers)); } catch(e){}
+}
+
+/* ================= FORMATAGE ================= */
+function fmtInt(v){
+  var s = Math.round(v).toString();
+  return s.replace(/\B(?=(\d{3})+(?!\d))/g, "\u202F");
+}
+function fmtEUR(v){
+  var neg = v < 0;
+  var abs = fmtInt(Math.abs(v));
+  return (neg ? "−" : "+") + abs + " €";
+}
+function fmtEURFlat(v){
+  return fmtInt(v) + " €";
+}
+
+/* ================= CALCUL ================= */
+function compute(){
+  var scorePts = 0, scoreMax = 0;
+  var dims = { adoption: [0,0], structuration: [0,0], mesure: [0,0], impact: [0,0] };
+  var dimMap = { Adoption: null, Investissement: null, Impact: "impact", Mesure: "mesure", Contexte: null, Structuration: "structuration" };
+  var q1dim = { Adoption: "adoption", Structuration: "structuration", Mesure: "mesure", Impact: "impact" };
+
+  var cost = 0, hoursWeek = 0, qualityRate = 0, ca = 0;
+
+  QUESTIONS.forEach(function(q, i){
+    var a = answers[i];
+    if(a === null) return;
+    var opt = q.options[a];
+    if(typeof opt.pts === "number"){
+      scorePts += opt.pts; scoreMax += 4;
+      var d = q1dim[q.dim];
+      if(d){ dims[d][0] += opt.pts; dims[d][1] += 4; }
+    }
+    if(typeof opt.cost === "number") cost = opt.cost;
+    if(typeof opt.hours === "number") hoursWeek = opt.hours;
+    if(typeof opt.quality === "number") qualityRate = opt.quality;
+    if(typeof opt.ca === "number") ca = opt.ca;
+  });
+
+  var score = scoreMax > 0 ? Math.round(scorePts / scoreMax * 100) : 0;
+  var hoursMonth = hoursWeek * WEEKS_PER_MONTH;
+  var valueHours = hoursMonth * HOURLY_VALUE * REDEPLOY_RATE;
+  var valueQuality = qualityRate * ca / 12;
+  var valueTotal = valueHours + valueQuality;
+  var net = valueTotal - cost;
+  var roiPct = cost > 0 ? (net / cost * 100) : null;
+  var uplift = score < 75 ? (75 - score) / 75 * valueTotal * 0.5 : 0;
+  var potential = net + uplift;
+
+  var dimScores = {};
+  Object.keys(dims).forEach(function(k){
+    dimScores[k] = dims[k][1] > 0 ? Math.round(dims[k][0] / dims[k][1] * 100) : 0;
+  });
+
+  return { score: score, cost: cost, hoursWeek: hoursWeek, hoursMonth: hoursMonth,
+    valueHours: valueHours, valueQuality: valueQuality, valueTotal: valueTotal,
+    net: net, roiPct: roiPct, potential: potential, uplift: uplift, dims: dimScores, ca: ca };
+}
+
+/* ================= NIVEAUX ================= */
+function levelOf(score){
+  if(score < 25) return {
+    n: 0,
+    name: "Exploration",
+    lbl: "Exploration — l'IA coûte, sans preuve de retour",
+    desc: "Vos outils IA vous coûtent encore plus qu'ils ne rapportent. L'enjeu n'est pas d'acheter davantage, mais de structurer l'existant : un pilote, un budget, un cas d'usage prioritaire."
+  };
+  if(score < 50) return {
+    n: 1,
+    name: "Adoption dispersée",
+    lbl: "Adoption dispersée",
+    desc: "Des gains existent, mais ils sont dispersés et non mesurés. Vous laissez probablement de l'argent sur la table chaque mois — l'estimation ci-contre en donne l'ordre de grandeur."
+  };
+  if(score < 75) return {
+    n: 2,
+    name: "Maturité en construction",
+    lbl: "Maturité en construction",
+    desc: "L'IA rapporte déjà. L'enjeu : industrialiser la mesure et étendre les workflows gagnants aux services qui traînent. Vos gains peuvent encore progresser sensiblement."
+  };
+  return {
+    n: 3,
+    name: "ROI piloté",
+    lbl: "ROI piloté — l'IA est un investissement géré",
+    desc: "Votre IA est pilotée comme un investissement : mesure, budget et processus sont en place. Dernière étape : optimiser chaque euro et documenter vos méthodes pour les répliquer."
+  };
+}
+
+/* ================= RECOMMANDATIONS ================= */
+var POOLS = {
+  adoption: [
+    { t: "Limitez le portefeuille d'outils", p: "Gardez 2 à 3 outils à fort usage réel et mettez en pause les abonnements utilisés par moins de 2 personnes sur 10. Un outil sous-utilisé coûte deux fois : sa licence, et la dispersion qu'il crée." },
+    { t: "Nommez un « champion IA » par service", p: "Une personne référente qui teste, documente et forme ses collègues. L'adoption réelle passe par les pairs, pas par une note de service." },
+    { t: "Cartographiez vos cas d'usage", p: "Listez les tâches répétitives de chaque service — comptes rendus, relances, saisies — et associez à chacune l'outil le plus simple disponible. C'est la base de toute priorisation." }
+  ],
+  structuration: [
+    { t: "Désignez un responsable IA", p: "Même à 20 % de temps : une seule personne qui détient la liste des abonnements, les accès et le budget. C'est le prérequis de tout pilotage sérieux." },
+    { t: "Centralisez vos abonnements", p: "Regroupez licences, factures et accès dans un tableau unique avec un coût mensuel total. Vous ne pouvez pas piloter ce que vous ne voyez pas — c'est souvent là que se cachent 20 % d'économies." },
+    { t: "Documentez vos workflows", p: "Pour chaque tâche automatisée, notez l'outil, la règle ou le prompt utilisé et le gain constaté. Ce patrimoine réutilisable vaut de l'or : il se réplique sans coût supplémentaire." }
+  ],
+  mesure: [
+    { t: "Instaurez un rituel de mesure mensuel", p: "30 minutes, un tableau, trois indicateurs : heures gagnées, tâches automatisées, erreurs évitées. Les PME qui mesurent chaque mois obtiennent en moyenne des ROI nettement supérieurs." },
+    { t: "Suivez le temps réellement réalloué", p: "Le temps gagné n'a de valeur que s'il est réinvesti. Choisissez chaque mois une mission précise à confier aux heures libérées — c'est le levier le plus sous-estimé de tout l'audit." },
+    { t: "Mesurez la qualité, pas seulement la vitesse", p: "Taux d'erreur, délais de réponse, satisfaction client. L'IA gagne souvent plus sur la qualité que sur la rapidité — et c'est cette partie que vos concurrents ne mesurent pas." }
+  ],
+  impact: [
+    { t: "Ciblez les tâches à plus fort volume", p: "Commencez par les 3 tâches les plus répétitives de votre entreprise — saisie, rédaction, qualification de leads. Ce sont elles qui libèrent le plus d'heures pour le moindre effort." },
+    { t: "Chiffrez chaque heure gagnée", p: "Avec un coût chargé de 40 €/h, 10 heures gagnées par semaine représentent environ 1 730 € de valeur potentielle par mois. Le chiffrage rend l'IA concrète pour la direction." },
+    { t: "Automatisez les tâches à fort risque d'erreur", p: "Devis, facturation, conformité : chaque erreur évitée est un coût épargné immédiat. L'IA excelle là où la relecture humaine échoue par lassitude." }
+  ]
+};
+var GLOBALS = [
+  { t: "Auditez vos abonnements dormants", p: "Au-delà de 3 500 €/mois de licences, un seul outil inutilisé représente souvent plusieurs centaines d'euros. Réduisez l'existant avant d'étendre : c'est le gain le plus rapide de tout l'audit." },
+  { t: "Commencez petit, mais commencez", p: "Choisissez UNE tâche à fort volume — comptes rendus de réunion, réponse client standard — et équipez-la d'un outil à moins de 50 €/mois. Objectif : un premier gain mesurable en deux semaines." },
+  { t: "Industrialisez vos workflows gagnants", p: "Transformez vos usages qui marchent en standards d'équipe, documentez vos prompts et formez les nouveaux arrivants. Votre avantage n'est pas l'outil, c'est la méthode." },
+  { t: "Étendez à un nouveau service chaque trimestre", p: "Le ROI marginal des outils déjà payés est proche de zéro : chaque service supplémentaire qui les adopte rentabilise davantage l'existant, sans coût additionnel." },
+  { t: "Planifiez une revue trimestrielle des outils", p: "45 minutes, un coût total, un responsable, trois indicateurs. C'est le meilleur ratio temps/valeur de tout l'audit — et le rituel qui manque à 8 PME sur 10." }
+];
+
+function buildRecos(res){
+  var recos = [];
+  /* règles globales déclenchantes */
+  if(res.cost >= 3500 && res.net < 0) recos.push(GLOBALS[0]);
+  if(res.hoursWeek === 0) recos.push(GLOBALS[1]);
+  /* dimensions les plus faibles d'abord */
+  var order = ["adoption", "structuration", "mesure", "impact"].sort(function(a, b){
+    return res.dims[a] - res.dims[b];
+  });
+  order.forEach(function(d){
+    if(recos.length >= 2) return;
+    if(res.dims[d] < 65) recos.push(POOLS[d][0]);
+  });
+  if(res.score >= 75){
+    recos.push(GLOBALS[2]);
+    if(recos.length < 3) recos.push(GLOBALS[3]);
+  }
+  /* compléments */
+  var fillers = [GLOBALS[4]];
+  var fi = 0;
+  while(recos.length < 3 && fi < fillers.length){
+    if(recos.indexOf(fillers[fi]) === -1) recos.push(fillers[fi]);
+    fi++;
+  }
+  while(recos.length < 3){
+    var extra = POOLS.impact[1];
+    if(recos.indexOf(extra) === -1) recos.push(extra);
+    else break;
+  }
+  return recos.slice(0, 3);
+}
+
+/* ================= AFFICHAGE RÉSULTATS ================= */
+function countUpNum(el, target, suffix){
+  var fmt = function(v){
+    var s = fmtInt(v);
+    return s + (suffix || "");
+  };
+  if(prefersReduced){ el.textContent = fmt(target); return; }
+  var dur = 1200, start = null;
+  function step(ts){
+    if(!start) start = ts;
+    var p = Math.min((ts - start) / dur, 1);
+    var eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(target * eased);
+    if(p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function computeAndShow(){
+  if(QUESTIONS.some(function(_, i){ return answers[i] === null; })){
+    /* sécurité : on force la question manquante */
+    for(var i = 0; i < answers.length; i++){
+      if(answers[i] === null){ goTo(i); return; }
+    }
+  }
+  save();
+  var res = compute();
+  var level = levelOf(res.score);
+
+  /* bascule quiz → résultats */
+  document.getElementById("quiz").style.display = "none";
+  var sec = document.getElementById("resultats");
+  sec.classList.add("show");
+  finished = true;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(answers)); } catch(e){}
+
+  /* jauge */
+  var gauge = document.getElementById("mainGauge");
+  gauge.classList.remove("lvl-0","lvl-1","lvl-2","lvl-3");
+  gauge.classList.add("lvl-" + level.n);
+  var offset = 100 - res.score;
+  if(prefersReduced){
+    gauge.style.strokeDashoffset = offset;
+  } else {
+    setTimeout(function(){ gauge.style.strokeDashoffset = offset; }, 120);
+  }
+  countUpNum(document.getElementById("gaugeNum"), res.score, "/100");
+  document.getElementById("levelLbl").textContent = level.lbl;
+  document.getElementById("levelName").textContent = level.name;
+  document.getElementById("levelDesc").textContent = level.desc;
+
+  /* financier */
+  document.getElementById("finCost").textContent = fmtEURFlat(res.cost);
+  document.getElementById("finCostSub").textContent = "abonnements mensuels" + (res.cost === 0 ? " — aucun coût déclaré" : "");
+  document.getElementById("finValue").textContent = fmtEUR(res.valueTotal);
+  document.getElementById("finValueSub").textContent = "temps réalloué + qualité";
+  document.getElementById("finHours").textContent = fmtInt(res.hoursMonth) + " h/mois";
+  document.getElementById("finHoursDetail").textContent = res.hoursWeek === 0 ? "0 h" : fmtInt(res.hoursWeek) + " h";
+  document.getElementById("finQuality").textContent = fmtEUR(res.valueQuality);
+  document.getElementById("finQuality").textContent = (res.valueQuality >= 0 ? "+" : "−") + fmtEURFlat(Math.abs(res.valueQuality));
+
+  var netEl = document.getElementById("finNet");
+  netEl.textContent = fmtEUR(res.net);
+  netEl.className = "t-val num " + (res.net >= 0 ? "mint" : "rose");
+
+  var pill = document.getElementById("roiPill");
+  if(res.roiPct === null){
+    pill.textContent = "ROI estimé : non calculable (coût déclaré nul)";
+    pill.classList.remove("neg");
+  } else if(res.roiPct >= 0){
+    pill.textContent = "ROI estimé : +" + fmtInt(res.roiPct) + " % — chaque euro investi rapporte " + (res.roiPct/100).toFixed(1).replace(".",",") + " €";
+    pill.classList.remove("neg");
+  } else {
+    pill.textContent = "ROI estimé : −" + fmtInt(Math.abs(res.roiPct)) + " % — chaque euro investi perd " + Math.abs(res.roiPct/100).toFixed(1).replace(".",",") + " €";
+    pill.classList.add("neg");
+  }
+
+  if(res.uplift > 20){
+    /* retirer les anciennes pastilles « potentiel » (relance d'audit) */
+    pill.parentNode.querySelectorAll(".roi-pill.potential").forEach(function(o){ o.remove(); });
+    var p = document.createElement("span");
+    p.className = "roi-pill potential";
+    p.style.marginRight = "8px";
+    p.textContent = "Potentiel après plan d'action : " + fmtEUR(res.potential) + "/mois";
+    pill.parentNode.insertBefore(p, pill);
+  } else {
+    pill.parentNode.querySelectorAll(".roi-pill.potential").forEach(function(o){ o.remove(); });
+  }
+
+  /* dimensions */
+  var dimEls = { adoption: "dimAdoption", structuration: "dimStructuration", mesure: "dimMesure", impact: "dimImpact" };
+  var dimVs  = { adoption: "dimAdoptionV", structuration: "dimStructurationV", mesure: "dimMesureV", impact: "dimImpactV" };
+  Object.keys(dimEls).forEach(function(k){
+    var bar = document.getElementById(dimEls[k]);
+    var v = document.getElementById(dimVs[k]);
+    v.textContent = res.dims[k];
+    if(prefersReduced){ bar.style.width = res.dims[k] + "%"; }
+    else { setTimeout(function(){ bar.style.width = res.dims[k] + "%"; }, 250 + Math.random()*150); }
+  });
+
+  /* recommandations */
+  var recos = buildRecos(res);
+  var list = document.getElementById("recoList");
+  list.innerHTML = "";
+  recos.forEach(function(r, i){
+    var div = document.createElement("div");
+    div.className = "reco";
+    div.innerHTML = '<span class="reco-n">0' + (i+1) + '</span><div><h3></h3><p></p></div>';
+    div.querySelector("h3").textContent = r.t;
+    div.querySelector("p").textContent = r.p;
+    list.appendChild(div);
+  });
+
+  document.getElementById("hypo").textContent =
+    "Hypothèses : coût chargé moyen 40 €/h en PME · taux de réallocation du temps gagné 65 % · gain qualité de 0,1 à 0,8 % du chiffre d'affaires mensuel (ici " + fmtInt(res.ca/12) + " €/mois) selon la fréquence de mesure. Estimation indicative — le rapport PDF détaille la formule et l'applique service par service.";
+
+  /* remonter en haut des résultats */
+  sec.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
+}
+
+/* ================= REPRISE / RESTART ================= */
+document.getElementById("btnRestart").addEventListener("click", function(){
+  answers = new Array(QUESTIONS.length).fill(null);
+  try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+  document.getElementById("resultats").classList.remove("show");
+  document.getElementById("quiz").style.display = "";
+  current = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: prefersReduced ? "auto" : "smooth" });
+});
+document.getElementById("btnPrint").addEventListener("click", function(){ window.print(); });
+
+/* ================= COMMANDE EMAILJS ================= */
+var orderForm = document.getElementById("orderForm");
+var orderStatus = document.getElementById("orderStatus");
+var orderSubmit = document.getElementById("orderSubmit");
+var selectedOffer = null;
+
+function selectOffer(val, title){
+  selectedOffer = val;
+  document.getElementById("orderTitle").textContent = title;
+  document.getElementById("orderSub").textContent =
+    val.indexOf("Pack") === 0
+      ? "Recevez un lien de paiement sécurisé, le rapport PDF et le plan d'action 30 jours, puis calons ensemble la session d'accompagnement de 45 minutes."
+      : "Recevez un lien de paiement sécurisé par e-mail sous 1 h ouvrée, puis votre rapport sous 48 h.";
+  var input = val.indexOf("Pack") === 0 ? document.getElementById("ofPack") : document.getElementById("ofRapport");
+  input.checked = true;
+  orderForm.classList.add("show");
+  orderForm.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "center" });
+}
+document.querySelectorAll("[data-offer]").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    var o = btn.getAttribute("data-offer");
+    if(o === "rapport") selectOffer("Rapport PDF complet (49 €)", "Commander le rapport PDF complet — 49 €");
+    else selectOffer("Pack direction (99 €)", "Réserver le pack direction — 99 €");
+  });
+});
+orderForm.querySelectorAll("input[name=offer]").forEach(function(r){
+  r.addEventListener("change", function(){
+    selectedOffer = r.value;
+    document.getElementById("orderTitle").textContent =
+      r.value.indexOf("Pack") === 0 ? "Réserver le pack direction — 99 €" : "Commander le rapport PDF complet — 49 €";
+  });
+});
+orderForm.addEventListener("submit", function(ev){
+  ev.preventDefault();
+  var site = document.getElementById("of-site").value.trim();
+  var name = document.getElementById("of-name").value.trim();
+  var email = document.getElementById("of-email").value.trim();
+  if(!selectedOffer){ orderStatus.className = "order-status err"; orderStatus.textContent = "Choisissez d'abord l'offre (49 € ou 99 €)."; return; }
+  if(!site || !name || !email){
+    orderStatus.className = "order-status err";
+    orderStatus.textContent = "Merci de remplir tous les champs.";
+    return;
+  }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){
+    orderStatus.className = "order-status err";
+    orderStatus.textContent = "L'adresse e-mail ne semble pas valide.";
+    return;
+  }
+  orderStatus.className = "order-status loading";
+  orderStatus.innerHTML = '<span class="spinner"></span> Envoi de la commande…';
+  orderSubmit.disabled = true;
+  var question = "Commande — " + selectedOffer + ". Score audit : " + (finished ? "" : "") + (document.getElementById("gaugeNum").textContent) + ". " +
+    "Entreprise : " + site + ". À rappeler par e-mail avec le lien de paiement.";
+  emailjs.send("service_cy1ytdb", "template_xpo58cv", {
+    site: site,
+    name: name,
+    email: email,
+    question: question
+  }).then(function(){
+    orderStatus.className = "order-status ok";
+    orderStatus.textContent = "Commande reçue, merci " + name.split(" ")[0] + " ! Vous recevrez le lien de paiement sécurisé sous 1 h ouvrée, puis votre livrable sous 48 h.";
+    orderForm.reset();
+    document.getElementById("ofRapport").checked = false;
+    document.getElementById("ofPack").checked = false;
+    selectedOffer = null;
+  }).catch(function(err){
+    orderStatus.className = "order-status err";
+    orderStatus.textContent = "L'envoi a échoué (problème de réseau ou de serveur). Réessayez dans quelques instants, ou utilisez le formulaire de contact sur la page d'accueil.";
+    console.error("EmailJS error:", err);
+  }).finally(function(){
+    orderSubmit.disabled = false;
+  });
+});
+
+/* ================= DÉMARRAGE ================= */
+if(answers.some(function(v){ return v !== null; })){
+  /* reprendre là où l'utilisateur s'était arrêté */
+  var firstNull = answers.indexOf(null);
+  current = firstNull === -1 ? 0 : firstNull;
+}
+render();
+})();
+</script>
+</body>
+</html>

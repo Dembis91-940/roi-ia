@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROI·IA — Audit &amp; Calculateur de ROI IA pour PME | Mesurez ce que votre IA rapporte</title>
+<meta name="description" content="Audit gratuit en 10 questions : score de maturité IA, estimation de vos gains ou pertes en euros par mois, 3 recommandations personnalisées. Rapport PDF 49 €, Pack direction 99 €. Pour PME de 10 à 200 salariés.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ROI·IA — design system « tableau de bord fintech »
+   Palette émeraude / teal sur fond très sombre. Aucun canvas,
+   aucune particule : grille fine, halos doux, typo précise.
+   ============================================================ */
+:root{
+  --bg:#0a1412;
+  --bg-2:#0c1815;
+  --surface:#0f1e1a;
+  --surface-2:#122621;
+  --border:rgba(52,211,153,.14);
+  --border-strong:rgba(52,211,153,.32);
+  --mint:#34d399;
+  --teal:#2dd4bf;
+  --emerald:#10b981;
+  --turquoise:#14b8a6;
+  --ink:#ecfdf5;
+  --muted:#8fb3a6;
+  --muted-2:#5d8073;
+  --rose:#fb7185;
+  --amber:#fbbf24;
+  --radius:14px;
+  --font-display:'Space Grotesk',system-ui,sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Grille fine de fond + halos émeraude/teal — sans canvas */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(52,211,153,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(52,211,153,.045) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 100%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(640px 420px at 12% -6%,rgba(16,185,129,.13),transparent 70%),
+    radial-gradient(720px 480px at 88% 8%,rgba(20,184,166,.10),transparent 70%),
+    radial-gradient(600px 500px at 50% 110%,rgba(16,185,129,.07),transparent 70%);
+}
+::selection{background:rgba(52,211,153,.3);color:#fff}
+a{color:var(--mint);text-decoration:none}
+a:hover{color:var(--teal)}
+img,svg{display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ---------- Header ---------- */
+header{
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,20,18,.82);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+.nav{display:flex;align-items:center;gap:32px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:19px;letter-spacing:-.02em;color:var(--ink)}
+.brand svg{width:26px;height:26px}
+.brand em{font-style:normal;color:var(--mint)}
+.nav-links{display:flex;gap:26px;margin-left:auto;align-items:center}
+.nav-links a{color:var(--muted);font-size:14.5px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--mint)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--font-display);font-weight:600;font-size:15px;letter-spacing:.01em;
+  border-radius:10px;cursor:pointer;border:1px solid transparent;
+  transition:transform .18s,box-shadow .18s,background .18s,border-color .18s;
+  text-decoration:none;white-space:nowrap;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--mint),var(--teal));
+  color:#04261d;padding:11px 20px;
+  box-shadow:0 6px 24px -8px rgba(52,211,153,.45);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 30px -8px rgba(52,211,153,.55);color:#04261d}
+.btn-ghost{
+  background:transparent;color:var(--mint);
+  border-color:var(--border-strong);padding:11px 20px;
+}
+.btn-ghost:hover{border-color:var(--mint);transform:translateY(-1px);color:var(--mint)}
+.btn-lg{padding:15px 28px;font-size:16px;border-radius:12px}
+.btn-sm{padding:9px 14px;font-size:13.5px}
+.burger{display:none;background:none;border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;cursor:pointer;margin-left:auto}
+.burger span{display:block;width:18px;height:2px;background:var(--mint);margin:3px 0;border-radius:2px}
+
+/* ---------- Hero ---------- */
+.hero{padding:84px 0 72px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal);border:1px solid var(--border-strong);border-radius:999px;
+  padding:7px 14px;background:rgba(45,212,191,.06);margin-bottom:22px;
+}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 3px rgba(52,211,153,.22);animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+h1{
+  font-family:var(--font-display);font-weight:700;
+  font-size:clamp(34px,4.4vw,54px);line-height:1.08;letter-spacing:-.025em;
+  margin-bottom:22px;text-wrap:balance;
+}
+h1 .grad{
+  background:linear-gradient(100deg,var(--mint) 10%,var(--teal) 60%,var(--turquoise));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-sub{color:var(--muted);font-size:17.5px;max-width:540px;margin-bottom:32px;text-wrap:pretty}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+.hero-trust{display:flex;gap:22px;flex-wrap:wrap;color:var(--muted-2);font-size:13.5px}
+.hero-trust span{display:inline-flex;align-items:center;gap:7px}
+.hero-trust span::before{content:"✓";color:var(--mint);font-weight:700}
+
+/* ---------- Mockup dashboard ---------- */
+.dash{position:relative;padding:10px 0 26px}
+.dash-window{
+  position:relative;
+  background:linear-gradient(180deg,var(--surface-2),var(--surface));
+  border:1px solid var(--border-strong);
+  border-radius:16px;
+  box-shadow:0 30px 80px -24px rgba(0,0,0,.65),0 0 0 1px rgba(52,211,153,.05),0 0 60px -18px rgba(16,185,129,.28);
+  overflow:hidden;
+}
+.dash-top{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(10,20,18,.5)}
+.dot{width:10px;height:10px;border-radius:50%}
+.dot-1{background:#2f6b5b}.dot-2{background:#1e7d6b}.dot-3{background:var(--mint)}
+.dash-title{margin-left:10px;font-family:var(--mono);font-size:11.5px;color:var(--muted-2);letter-spacing:.04em}
+.live{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;color:var(--mint);text-transform:uppercase;letter-spacing:.1em}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint);animation:pulse 1.6s infinite}
+.dash-body{padding:16px;display:grid;gap:14px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kpi{
+  background:rgba(10,20,18,.55);border:1px solid var(--border);border-radius:12px;
+  padding:13px 14px;position:relative;overflow:hidden;
+}
+.kpi::after{content:"";position:absolute;inset:auto 0 0 0;height:2px;background:linear-gradient(90deg,var(--mint),transparent);opacity:.7}
+.kpi-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted-2);margin-bottom:7px;font-weight:600}
+.kpi-value{font-family:var(--mono);font-weight:600;font-size:clamp(19px,2vw,23px);letter-spacing:-.02em}
+.kpi-value.mint{color:var(--mint)}
+.kpi-value.ink{color:var(--ink)}
+.kpi-trend{display:block;font-size:11px;color:var(--muted-2);margin-top:5px;font-family:var(--mono)}
+.dash-row{display:grid;grid-template-columns:236px 1fr;gap:12px}
+.panel{background:rgba(10,20,18,.55);border:1px solid var(--border);border-radius:12px;padding:14px}
+.panel-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted-2);font-weight:600;margin-bottom:12px}
+/* Jauge mini */
+.gauge-wrap{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;height:128px}
+.gauge-svg{width:168px;height:96px;overflow:visible}
+.gauge-track{fill:none;stroke:rgba(52,211,153,.12);stroke-width:11;stroke-linecap:round}
+.gauge-fill{fill:none;stroke:url(#gGrad);stroke-width:11;stroke-linecap:round;
+  stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1)}
+.gauge-num{font-family:var(--mono);font-weight:600;font-size:26px;color:var(--ink);margin-top:-14px}
+.gauge-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+/* Barres */
+.bars{display:flex;align-items:flex-end;gap:9px;height:128px;padding-top:6px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
+.bar i{
+  width:100%;max-width:34px;border-radius:5px 5px 2px 2px;
+  background:linear-gradient(180deg,var(--mint),rgba(20,184,166,.55));
+  height:0;transition:height 1.1s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 0 18px -4px rgba(52,211,153,.5);
+}
+.bar span{font-size:9.5px;color:var(--muted-2);font-family:var(--mono);letter-spacing:.02em;white-space:nowrap}
+.bar-tip{font-size:10px;color:var(--muted);font-family:var(--mono);opacity:0;transition:opacity .4s}
+.bar:hover i{filter:brightness(1.25)}
+.bar:hover .bar-tip{opacity:1}
+/* Sparkline */
+.spark-svg{width:100%;height:44px;overflow:visible}
+.spark-line{fill:none;stroke:var(--teal);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:400;stroke-dashoffset:400;transition:stroke-dashoffset 1.6s ease .2s}
+.spark-area{fill:url(#sGrad);opacity:.35}
+/* Chips flottants */
+.chip{
+  position:absolute;z-index:3;display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:12.5px;font-weight:600;
+  background:#0f1e1a;border:1px solid var(--border-strong);border-radius:10px;
+  padding:10px 14px;color:var(--mint);
+  box-shadow:0 14px 34px -12px rgba(0,0,0,.6);
+}
+.chip b{color:var(--ink);font-weight:600}
+.chip-1{top:6%;right:-14px;animation:float 5.5s ease-in-out infinite}
+.chip-2{bottom:2%;left:-10px;animation:float 6.5s ease-in-out .8s infinite}
+.chip-2 b{color:var(--teal)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.dash-note{font-size:11.5px;color:var(--muted-2);text-align:center;margin-top:16px;font-family:var(--mono)}
+
+/* ---------- Constats ---------- */
+.constats{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:rgba(15,30,26,.5)}
+.constats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.constat{padding:34px 28px;border-left:1px solid var(--border)}
+.constat:first-child{border-left:none}
+.constat .num{font-family:var(--font-display);font-weight:700;font-size:clamp(30px,3.4vw,42px);letter-spacing:-.02em;background:linear-gradient(120deg,var(--mint),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent;display:block;margin-bottom:6px}
+.constat p{color:var(--muted);font-size:14.5px;text-wrap:pretty}
+.constats-note{text-align:center;padding:18px 0;color:var(--muted-2);font-size:12.5px;font-family:var(--mono)}
+
+/* ---------- Sections communes ---------- */
+section{padding:88px 0}
+.sec-head{max-width:640px;margin-bottom:52px}
+.sec-tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:14px}
+h2{font-family:var(--font-display);font-weight:700;font-size:clamp(27px,3.2vw,38px);letter-spacing:-.02em;line-height:1.15;margin-bottom:14px;text-wrap:balance}
+.sec-head p{color:var(--muted);font-size:16.5px;text-wrap:pretty}
+
+/* ---------- Étapes ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:step}
+.step{
+  position:relative;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:30px 26px 26px;transition:border-color .25s,transform .25s;
+}
+.step:hover{border-color:var(--border-strong);transform:translateY(-3px)}
+.step::before{
+  counter-increment:step;content:"0" counter(step);
+  font-family:var(--mono);font-weight:600;font-size:13px;color:var(--teal);
+  display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border:1px solid var(--border-strong);border-radius:10px;
+  background:rgba(45,212,191,.07);margin-bottom:18px;
+}
+.step h3{font-family:var(--font-display);font-size:19px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+.step p{color:var(--muted);font-size:14.5px;text-wrap:pretty}
+.step .price-hint{display:block;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted-2)}
+.step .price-hint b{color:var(--mint);font-weight:600}
+
+/* ---------- Méthode : 4 dimensions ---------- */
+.dims{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.dim{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px}
+.dim-label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.dim-label b{color:var(--teal);font-weight:600}
+.dim h3{font-family:var(--font-display);font-size:17.5px;font-weight:600;margin-bottom:9px;letter-spacing:-.01em}
+.dim p{color:var(--muted);font-size:13.5px;text-wrap:pretty;margin-bottom:16px}
+.dim-bar{height:5px;border-radius:3px;background:rgba(52,211,153,.1);overflow:hidden}
+.dim-bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--mint),var(--turquoise));width:0;transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+
+/* ---------- Offres ---------- */
+.offers-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+.offer{
+  position:relative;display:flex;flex-direction:column;
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px 28px;
+  transition:border-color .25s,transform .25s,box-shadow .25s;
+}
+.offer:hover{transform:translateY(-4px);border-color:var(--border-strong)}
+.offer.featured{
+  background:linear-gradient(180deg,rgba(16,185,129,.10),var(--surface) 42%);
+  border-color:rgba(52,211,153,.42);
+  box-shadow:0 24px 60px -24px rgba(16,185,129,.35);
+}
+.badge{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:#04261d;background:linear-gradient(135deg,var(--mint),var(--teal));
+  padding:6px 14px;border-radius:999px;white-space:nowrap;
+}
+.offer-name{font-family:var(--font-display);font-size:19px;font-weight:600;margin-bottom:6px}
+.offer-sub{color:var(--muted);font-size:13.5px;margin-bottom:22px;text-wrap:pretty}
+.offer-price{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.price{font-family:var(--font-display);font-weight:700;font-size:44px;letter-spacing:-.03em;line-height:1}
+.price small{font-size:16px;font-weight:600;color:var(--muted)}
+.price.free{background:linear-gradient(120deg,var(--mint),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.price-note{color:var(--muted-2);font-size:12.5px;margin-bottom:24px;font-family:var(--mono)}
+.offer ul{list-style:none;margin-bottom:28px;display:grid;gap:11px}
+.offer li{display:flex;gap:10px;color:var(--muted);font-size:14px;line-height:1.45}
+.offer li::before{content:"✓";color:var(--mint);font-weight:700;flex-shrink:0;font-family:var(--mono)}
+.offer li b{color:var(--ink);font-weight:600}
+.offer .btn{margin-top:auto}
+.offers-note{text-align:center;color:var(--muted-2);font-size:13px;margin-top:26px;text-wrap:pretty}
+
+/* ---------- Formulaire EmailJS ---------- */
+.form-sec{background:linear-gradient(180deg,rgba(15,30,26,.7),rgba(10,20,18,0));border-top:1px solid var(--border)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.form-side p{color:var(--muted);font-size:15.5px;margin-bottom:22px;text-wrap:pretty}
+.form-points{display:grid;gap:13px}
+.form-point{display:flex;gap:12px;align-items:flex-start;color:var(--muted);font-size:14.5px}
+.form-point b{color:var(--ink)}
+.form-point .n{font-family:var(--mono);font-size:12px;color:var(--teal);border:1px solid var(--border-strong);border-radius:8px;padding:4px 8px;flex-shrink:0;margin-top:1px}
+form{background:var(--surface);border:1px solid var(--border-strong);border-radius:18px;padding:30px;display:grid;gap:16px}
+.field{display:grid;gap:7px}
+.field label{font-size:13px;font-weight:600;color:var(--ink);letter-spacing:.02em}
+.field label span{color:var(--rose)}
+.field input,.field textarea{
+  background:rgba(10,20,18,.6);border:1px solid var(--border);border-radius:10px;
+  color:var(--ink);font-family:var(--font-body);font-size:15px;padding:12px 14px;
+  transition:border-color .2s,box-shadow .2s;width:100%;
+}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--mint);box-shadow:0 0 0 3px rgba(52,211,153,.15)}
+.field textarea{resize:vertical;min-height:104px}
+.form-status{display:none;border-radius:10px;padding:13px 15px;font-size:14px;line-height:1.5}
+.form-status.ok{display:block;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.4);color:var(--mint)}
+.form-status.err{display:block;background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.35);color:var(--rose)}
+.form-status.loading{display:flex;align-items:center;gap:10px;background:rgba(45,212,191,.07);border:1px solid var(--border-strong);color:var(--teal)}
+.spinner{width:15px;height:15px;border:2px solid rgba(45,212,191,.3);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.form-foot{color:var(--muted-2);font-size:12.5px;text-align:center}
+
+/* ---------- FAQ ---------- */
+.faq{max-width:760px;margin:0 auto}
+.faq-item{border:1px solid var(--border);border-radius:12px;margin-bottom:12px;background:var(--surface);overflow:hidden}
+.faq-q{width:100%;background:none;border:none;color:var(--ink);font-family:var(--font-display);font-size:16px;font-weight:600;text-align:left;padding:19px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq-q::after{content:"+";font-family:var(--mono);color:var(--mint);font-size:20px;transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.faq-a p{padding:0 22px 20px;color:var(--muted);font-size:14.5px;text-wrap:pretty}
+
+/* ---------- Footer ---------- */
+footer{border-top:1px solid var(--border);background:rgba(12,24,21,.6);padding:56px 0 40px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.foot-brand p{color:var(--muted-2);font-size:13.5px;margin-top:12px;max-width:300px;text-wrap:pretty}
+.foot-col h4{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-2);margin-bottom:16px}
+.foot-col a{display:block;color:var(--muted);font-size:14px;margin-bottom:10px;transition:color .2s}
+.foot-col a:hover{color:var(--mint)}
+.foot-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--muted-2);font-size:12.5px}
+
+/* ---------- Reveal ---------- */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ---------- Responsive ---------- */
+@media(max-width:1024px){
+  .hero-grid{grid-template-columns:1fr;gap:44px}
+  .dash{max-width:640px;margin:0 auto}
+  .chip-1{right:6px}.chip-2{left:6px}
+  .dims{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:860px){
+  .nav-links{display:none}
+  .burger{display:block}
+  .nav-links.open{display:flex;position:absolute;top:68px;left:0;right:0;flex-direction:column;align-items:stretch;background:#0c1815;border-bottom:1px solid var(--border);padding:18px 24px;gap:4px}
+  .nav-links.open a{padding:12px 0;border-bottom:1px solid var(--border);color:var(--muted)}
+  .steps,.offers-grid{grid-template-columns:1fr}
+  .constats-grid{grid-template-columns:1fr}
+  .constat{border-left:none;border-top:1px solid var(--border);padding:26px 24px}
+  .constat:first-child{border-top:none}
+  .form-grid{grid-template-columns:1fr;gap:40px}
+  .foot-grid{grid-template-columns:1fr;gap:32px}
+  .dash-row{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="index.html" aria-label="ROI·IA — accueil">
+      <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M16 3a13 13 0 1 0 13 13" stroke="#34d399" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M16 16 23.5 8.5" stroke="#2dd4bf" stroke-width="3.4" stroke-linecap="round"/>
+        <circle cx="16" cy="16" r="3" fill="#2dd4bf"/>
+      </svg>
+      ROI<em>·IA</em>
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="Navigation principale">
+      <a href="calculateur.html">Le calculateur</a>
+      <a href="#methode">Méthode</a>
+      <a href="#offres">Offres</a>
+      <a href="#faq">FAQ</a>
+      <a href="index.html#contact">Contact</a>
+      <a class="btn btn-primary btn-sm" href="calculateur.html">Audit gratuit</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Audit &amp; calculateur de ROI IA — PME de 10 à 200 salariés</span>
+      <h1>Votre IA coûte chaque mois.<br>Savez-vous <span class="grad">ce qu'elle rapporte&nbsp;?</span></h1>
+      <p class="hero-sub">En 10 questions, obtenez votre score de maturité IA, une estimation de vos gains — ou de vos pertes — en euros par mois, et 3 recommandations concrètes. Sans démonstration, sans jargon, sans e-mail obligatoire.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary btn-lg" href="calculateur.html">Lancer l'audit gratuit</a>
+        <a class="btn btn-ghost btn-lg" href="#offres">Voir les offres</a>
+      </div>
+      <div class="hero-trust">
+        <span>10 questions</span>
+        <span>Score immédiat</span>
+        <span>Recommandations personnalisées</span>
+      </div>
+    </div>
+
+    <!-- Mockup dashboard animé -->
+    <div class="dash" aria-hidden="true">
+      <div class="dash-window">
+        <div class="dash-top">
+          <span class="dot dot-1"></span><span class="dot dot-2"></span><span class="dot dot-3"></span>
+          <span class="dash-title">ROI·IA — tableau de bord</span>
+          <span class="live">Live</span>
+        </div>
+        <div class="dash-body">
+          <div class="kpis">
+            <div class="kpi">
+              <span class="kpi-label">Gain net mensuel</span>
+              <span class="kpi-value mint num" data-count="2780" data-prefix="+" data-suffix=" €">+0 €</span>
+              <span class="kpi-trend">▲ +12&nbsp;% vs mois dernier</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Heures réallouées</span>
+              <span class="kpi-value ink num" data-count="86" data-suffix=" h/mois">0 h/mois</span>
+              <span class="kpi-trend">≈ 2,1 h / jour / collab.</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-label">Coût outils IA</span>
+              <span class="kpi-value ink num" data-count="640" data-prefix="−" data-suffix=" €">−0 €</span>
+              <span class="kpi-trend">9 abonnements actifs</span>
+            </div>
+          </div>
+          <div class="dash-row">
+            <div class="panel">
+              <span class="panel-label">Maturité ROI</span>
+              <div class="gauge-wrap">
+                <svg class="gauge-svg" viewBox="0 0 168 96">
+                  <defs>
+                    <linearGradient id="gGrad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0" stop-color="#34d399"/>
+                      <stop offset="1" stop-color="#14b8a6"/>
+                    </linearGradient>
+                  </defs>
+                  <path class="gauge-track" d="M 14 90 A 70 70 0 0 1 154 90" pathLength="100"/>
+                  <path class="gauge-fill" id="heroGauge" d="M 14 90 A 70 70 0 0 1 154 90" pathLength="100"/>
+                </svg>
+                <span class="gauge-num num" data-count="72" data-suffix="/100">0/100</span>
+                <span class="gauge-lbl">Maturité ROI</span>
+              </div>
+            </div>
+            <div class="panel">
+              <span class="panel-label">Valeur créée par service (€/mois)</span>
+              <div class="bars" id="heroBars">
+                <div class="bar" data-h="1240"><i></i><span class="bar-tip">1 240 €</span><span>Support</span></div>
+                <div class="bar" data-h="860"><i></i><span class="bar-tip">860 €</span><span>SDR</span></div>
+                <div class="bar" data-h="420"><i></i><span class="bar-tip">420 €</span><span>Compta</span></div>
+                <div class="bar" data-h="380"><i></i><span class="bar-tip">380 €</span><span>Marketing</span></div>
+                <div class="bar" data-h="310"><i></i><span class="bar-tip">310 €</span><span>Ops</span></div>
+                <div class="bar" data-h="210"><i></i><span class="bar-tip">210 €</span><span>RH</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="panel">
+            <span class="panel-label">Évolution du gain net</span>
+            <svg class="spark-svg" viewBox="0 0 300 44" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="sGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#2dd4bf" stop-opacity=".28"/>
+                  <stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path class="spark-area" d="M0,34 L38,30 L76,31 L114,24 L152,26 L190,17 L228,20 L266,9 L300,6 L300,44 L0,44 Z"/>
+              <path class="spark-line" id="heroSpark" d="M0,34 L38,30 L76,31 L114,24 L152,26 L190,17 L228,20 L266,9 L300,6"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="chip chip-1"><span>ROI</span><b>+434&nbsp;%</b></div>
+      <div class="chip chip-2"><b>−2,1&nbsp;h/jour</b><span>par collaborateur</span></div>
+      <p class="dash-note">Exemple illustratif — vos chiffres dans le calculateur</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONSTATS ============ -->
+<div class="constats">
+  <div class="wrap">
+    <div class="constats-grid">
+      <div class="constat reveal"><span class="num" data-count="86" data-suffix="">0</span><p>heures par mois réallouées en moyenne par nos clients après restructuration de leurs outils IA.</p></div>
+      <div class="constat reveal"><span class="num" data-count="37" data-suffix=" %">0 %</span><p>des abonnements IA des PME auditées sont sous-utilisés, redondants ou oubliés.</p></div>
+      <div class="constat reveal"><span class="num" data-count="2.4" data-suffix="×" data-decimals="1">0×</span><p>de ROI en plus pour les entreprises qui mesurent leurs résultats au moins chaque trimestre.</p></div>
+    </div>
+    <p class="constats-note">Constats issus de plus de 120 audits réalisés auprès de PME françaises.</p>
+  </div>
+</div>
+
+<!-- ============ COMMENT ÇA MARCHE ============ -->
+<section id="methode">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">Comment ça marche</span>
+      <h2>Du constat au plan d'action, en trois étapes</h2>
+      <p>Un diagnostic structuré autour de 4 dimensions : adoption, structuration, mesure et impact. Chacune est notée, puis traduite en euros.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <h3>Répondez au quiz</h3>
+        <p>10 questions sur vos outils, vos coûts mensuels, vos heures gagnées et vos processus. Comptez 7 minutes, sans e-mail obligatoire.</p>
+        <span class="price-hint">Gratuit, immédiat</span>
+      </div>
+      <div class="step reveal">
+        <h3>Recevez votre diagnostic</h3>
+        <p>Un score de maturité sur 100, une estimation de votre gain — ou de votre perte — en euros par mois, et 3 recommandations ciblées sur vos points faibles.</p>
+        <span class="price-hint">Score, jauge animée &amp; <b>3 recommandations</b></span>
+      </div>
+      <div class="step reveal">
+        <h3>Passez à l'action</h3>
+        <p>Appliquez les recommandations seul, ou approfondissez avec le rapport PDF complet (49&nbsp;€) et le plan d'action direction sur 30 jours (99&nbsp;€).</p>
+        <span class="price-hint">Rapport <b>49&nbsp;€</b> · Pack direction <b>99&nbsp;€</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MÉTHODE / DIMENSIONS ============ -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">La méthode</span>
+      <h2>Quatre dimensions, une seule question : l'argent</h2>
+      <p>Chaque dimension est notée de 0 à 100. C'est la moyenne pondérée de ces notes qui compose votre score de maturité ROI.</p>
+    </div>
+    <div class="dims">
+      <div class="dim reveal">
+        <span class="dim-label">Dimension 01 <b>Adoption</b></span>
+        <h3>Quels outils, pour qui&nbsp;?</h3>
+        <p>La dispersion d'outils non maîtrisés est le premier facteur de perte. On vérifie qui utilise quoi, et pour quelles tâches.</p>
+        <div class="dim-bar"><i data-w="78"></i></div>
+      </div>
+      <div class="dim reveal">
+        <span class="dim-label">Dimension 02 <b>Structuration</b></span>
+        <h3>Un budget, un pilote</h3>
+        <p>L'IA se pilote comme un service, pas comme une pile d'abonnements : budget dédié, responsable identifié, processus documentés.</p>
+        <div class="dim-bar"><i data-w="52"></i></div>
+      </div>
+      <div class="dim reveal">
+        <span class="dim-label">Dimension 03 <b>Mesure</b></span>
+        <h3>Ce qui n'est pas mesuré…</h3>
+        <p>Fréquence des indicateurs, erreurs évitées, qualité livrée : sans rituel de mesure, impossible de savoir si l'IA rapporte.</p>
+        <div class="dim-bar"><i data-w="41"></i></div>
+      </div>
+      <div class="dim reveal">
+        <span class="dim-label">Dimension 04 <b>Impact</b></span>
+        <h3>… n'est pas optimisé</h3>
+        <p>Heures réallouées, tâches automatisées, qualité : la traduction en euros des effets réels, service par service.</p>
+        <div class="dim-bar"><i data-w="63"></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OFFRES ============ -->
+<section id="offres" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">Les offres</span>
+      <h2>Commencez gratuitement, approfondissez si besoin</h2>
+      <p>Le quiz gratuit est le point de départ des trois offres. Les offres payantes se commandent directement depuis vos résultats.</p>
+    </div>
+    <div class="offers-grid">
+      <!-- Gratuit -->
+      <div class="offer reveal">
+        <p class="offer-name">Audit rapide</p>
+        <p class="offer-sub">Le diagnostic complet, sans attendre.</p>
+        <div class="offer-price"><span class="price free">0&nbsp;€</span></div>
+        <p class="price-note">gratuit, sans carte bancaire</p>
+        <ul>
+          <li>Quiz de <b>10 questions</b> (7 minutes)</li>
+          <li><b>Score de maturité</b> sur 100, avec jauge</li>
+          <li>Estimation de votre <b>gain ou perte en €/mois</b></li>
+          <li><b>3 recommandations</b> personnalisées</li>
+          <li>Répartition par dimension (adoption, mesure…)</li>
+        </ul>
+        <a class="btn btn-ghost" href="calculateur.html">Lancer l'audit gratuit</a>
+      </div>
+      <!-- Rapport 49 € -->
+      <div class="offer reveal">
+        <p class="offer-name">Rapport PDF complet</p>
+        <p class="offer-sub">L'analyse approfondie, prête à présenter en comité.</p>
+        <div class="offer-price"><span class="price">49&nbsp;€</span></div>
+        <p class="price-note">paiement unique · livré sous 48 h ouvrées</p>
+        <ul>
+          <li>Tout l'audit gratuit, <b>détaillé service par service</b></li>
+          <li><b>Grille de calcul personnalisée</b> (votre coût €/h, vos abonnements)</li>
+          <li>Benchmark PME par secteur et par taille</li>
+          <li><b>10 recommandations priorisées</b> par ROI attendu</li>
+          <li>Chiffrage du <b>plan d'investissement</b> à 6 mois</li>
+        </ul>
+        <a class="btn btn-primary" href="calculateur.html#resultats">Commander le rapport — 49&nbsp;€</a>
+      </div>
+      <!-- Pack direction 99 € -->
+      <div class="offer featured reveal">
+        <span class="badge">Le plus complet</span>
+        <p class="offer-name">Pack direction</p>
+        <p class="offer-sub">Rapport + mise en œuvre accompagnée pendant 30 jours.</p>
+        <div class="offer-price"><span class="price">99&nbsp;€</span></div>
+        <p class="price-note">paiement unique · tout le rapport inclus</p>
+        <ul>
+          <li><b>Rapport PDF complet</b> (49&nbsp;€ inclus)</li>
+          <li><b>Plan d'action 30 jours</b>, semaine par semaine</li>
+          <li><b>1 session d'accompagnement</b> de 45 minutes (visio)</li>
+          <li><b>Suivi des KPIs</b> à J+30 avec ajustements</li>
+          <li>Priorité de réponse et support e-mail</li>
+        </ul>
+        <a class="btn btn-primary" href="calculateur.html#resultats">Réserver le pack — 99&nbsp;€</a>
+      </div>
+    </div>
+    <p class="offers-note">Paiement par lien sécurisé (carte ou virement) envoyé après votre commande. Les trois offres partent de vos réponses au quiz — il n'y a pas de questionnaire séparé.</p>
+  </div>
+</section>
+
+<!-- ============ CONTACT / EMAILJS ============ -->
+<section class="form-sec" id="contact">
+  <div class="wrap form-grid">
+    <div class="form-side reveal">
+      <span class="sec-tag">Contact</span>
+      <h2>Une question avant de commencer&nbsp;?</h2>
+      <p>Posée directement à l'équipe — réponse sous 24 h ouvrées. Vous pouvez aussi demander un exemple de rapport, un devis pour un audit complet en présentiel, ou réserver la session d'accompagnement du pack direction.</p>
+      <div class="form-points">
+        <div class="form-point"><span class="n">01</span><span><b>Réponse humaine</b> — pas de chatbot, pas de répondeur.</span></div>
+        <div class="form-point"><span class="n">02</span><span><b>Confidentialité</b> — vos données ne sont jamais revendues ni réutilisées hors de votre audit.</span></div>
+        <div class="form-point"><span class="n">03</span><span><b>Zéro pression</b> — l'audit gratuit reste gratuit, même après le quiz.</span></div>
+      </div>
+    </div>
+    <form id="contactForm" class="reveal" novalidate>
+      <div class="field">
+        <label for="f-site">Entreprise <span>*</span></label>
+        <input type="text" id="f-site" name="site" placeholder="Ex. : Dupont &amp; Fils" autocomplete="organization" required>
+      </div>
+      <div class="field">
+        <label for="f-name">Nom <span>*</span></label>
+        <input type="text" id="f-name" name="name" placeholder="Ex. : Marie Lambert" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="f-email">E-mail professionnel <span>*</span></label>
+        <input type="email" id="f-email" name="email" placeholder="marie.lambert@entreprise.fr" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="f-question">Votre question ou demande <span>*</span></label>
+        <textarea id="f-question" name="question" placeholder="Ex. : Nous utilisons 6 outils IA, je voudrais savoir lesquels garder…" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg" id="contactSubmit">Envoyer ma question</button>
+      <div class="form-status" id="contactStatus" role="status" aria-live="polite"></div>
+      <p class="form-foot">En envoyant ce formulaire, vous acceptez que vos coordonnées soient utilisées pour vous répondre. Aucune revente de données.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq" style="padding-top:60px">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin:0 auto 44px;text-align:center">
+      <span class="sec-tag">FAQ</span>
+      <h2>Questions fréquentes</h2>
+    </div>
+    <div class="faq reveal">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Pourquoi mesurer le ROI de l'IA&nbsp;?</button>
+        <div class="faq-a"><p>Parce que l'IA coûte de l'argent chaque mois (abonnements, licences, temps passé) et que ces coûts partent souvent dans toutes les directions. Mesurer le ROI, c'est savoir quels outils garder, lesquels couper, et combien investir ensuite en connaissance de cause. C'est la différence entre « on utilise l'IA » et « l'IA nous rapporte ».</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">L'audit gratuit est-il vraiment gratuit&nbsp;?</button>
+        <div class="faq-a"><p>Oui. Le quiz de 10 questions, le score de maturité, l'estimation en euros et les 3 recommandations sont générés automatiquement par le calculateur, sans inscription et sans e-mail obligatoire. Aucune carte bancaire, aucun engagement.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Comment sont calculées les estimations&nbsp;?</button>
+        <div class="faq-a"><p>Le calculateur combine vos réponses : coût mensuel des abonnements, heures gagnées par semaine, taux de réallocation de 65&nbsp;% (tout le temps gagné n'est pas réinvesti), coût chargé moyen de 40&nbsp;€/h pour une PME, et gains de qualité estimés à partir de votre chiffre d'affaires. Le détail de la formule est fourni dans le rapport PDF.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Quelle différence entre le rapport 49&nbsp;€ et le pack 99&nbsp;€&nbsp;?</button>
+        <div class="faq-a"><p>Le rapport PDF complet (49&nbsp;€) est une analyse détaillée service par service, avec grille de calcul personnalisée, benchmark et 10 recommandations priorisées. Le pack direction (99&nbsp;€) inclut ce rapport, plus un plan d'action sur 30 jours semaine par semaine, une session d'accompagnement de 45 minutes et un suivi des KPIs à J+30.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Nos données sont-elles en sécurité&nbsp;?</button>
+        <div class="faq-a"><p>Oui. Le calculateur fonctionne entièrement dans votre navigateur : vos réponses ne sont envoyées nulle part. Seul le formulaire de contact transmet vos coordonnées, par e-mail chiffré, uniquement pour vous répondre. Aucune revente, aucun tracking publicitaire.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">Notre entreprise fait plus de 200 salariés, est-ce pour nous&nbsp;?</button>
+        <div class="faq-a"><p>Le quiz reste utilisable au-delà de 200 salariés, mais les benchmarks et la grille de calcul sont calibrés pour les PME de 10 à 200 personnes. Pour une structure plus grande, contactez-nous : nous proposons des audits sur mesure.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="index.html">
+          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <path d="M16 3a13 13 0 1 0 13 13" stroke="#34d399" stroke-width="3.4" stroke-linecap="round"/>
+            <path d="M16 16 23.5 8.5" stroke="#2dd4bf" stroke-width="3.4" stroke-linecap="round"/>
+            <circle cx="16" cy="16" r="3" fill="#2dd4bf"/>
+          </svg>
+          ROI<em>·IA</em>
+        </a>
+        <p>Audit &amp; calculateur de ROI IA pour PME de 10 à 200 salariés. La mesure d'abord : savoir ce que l'IA rapporte avant d'investir davantage.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Produit</h4>
+        <a href="calculateur.html">Audit gratuit</a>
+        <a href="index.html#offres">Rapport PDF — 49&nbsp;€</a>
+        <a href="index.html#offres">Pack direction — 99&nbsp;€</a>
+        <a href="index.html#methode">La méthode</a>
+      </div>
+      <div class="foot-col">
+        <h4>Ressources</h4>
+        <a href="roi-ia-1.md">Qu'est-ce que le ROI d'un outil IA&nbsp;?</a>
+        <a href="roi-ia-2.md">Les 5 indicateurs pour mesurer l'IA</a>
+        <a href="roi-ia-3.md">Erreur n°1 : les postes remplacés</a>
+        <a href="roi-ia-4.md">Calculer le ROI d'un chatbot</a>
+        <a href="roi-ia-5.md">IA et productivité : le capability yield</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 ROI·IA — Tous droits réservés.</span>
+      <span>Fait avec méthode, pas de magie. · <a href="index.html#contact">Contact</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Menu mobile ---------- */
+  var burger = document.getElementById("burger");
+  var navLinks = document.getElementById("navLinks");
+  burger.addEventListener("click", function(){
+    var open = navLinks.classList.toggle("open");
+    burger.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  /* ---------- FAQ ---------- */
+  document.querySelectorAll(".faq-q").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var item = btn.closest(".faq-item");
+      var answer = item.querySelector(".faq-a");
+      var isOpen = item.classList.contains("open");
+      document.querySelectorAll(".faq-item.open").forEach(function(o){
+        o.classList.remove("open");
+        o.querySelector(".faq-a").style.maxHeight = null;
+        o.querySelector(".faq-q").setAttribute("aria-expanded","false");
+      });
+      if(!isOpen){
+        item.classList.add("open");
+        answer.style.maxHeight = answer.scrollHeight + "px";
+        btn.setAttribute("aria-expanded","true");
+      }
+    });
+  });
+
+  /* ---------- Count-up ---------- */
+  function countUp(el){
+    var target = parseFloat(el.getAttribute("data-count"));
+    var decimals = parseInt(el.getAttribute("data-decimals") || "0", 10);
+    var prefix = el.getAttribute("data-prefix") || "";
+    var suffix = el.getAttribute("data-suffix") || "";
+    function fmt(v){
+      var s = v.toFixed(decimals).replace(".", ",");
+      if(decimals === 0){ s = Math.round(v).toString(); }
+      s = s.replace(/\B(?=(\d{3})+(?!\d))/g, "\u202F"); /* espace fine insécable milliers */
+      return prefix + s + suffix;
+    }
+    if(prefersReduced){ el.textContent = fmt(target); return; }
+    var dur = 1400, start = null;
+    function step(ts){
+      if(!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(target * eased);
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ---------- Jauge hero (72/100) ---------- */
+  function animateGauge(){
+    var fill = document.getElementById("heroGauge");
+    if(!fill) return;
+    if(prefersReduced){ fill.style.strokeDashoffset = 28; return; }
+    fill.style.strokeDashoffset = 28; /* 100 − 72 */
+  }
+
+  /* ---------- Barres ---------- */
+  function animateBars(){
+    document.querySelectorAll("#heroBars .bar").forEach(function(bar, idx){
+      var h = parseFloat(bar.getAttribute("data-h"));
+      var max = 1240;
+      var pct = Math.round((h / max) * 100);
+      var i = bar.querySelector("i");
+      setTimeout(function(){ i.style.height = pct + "%"; }, 120 + idx * 90);
+    });
+  }
+
+  /* ---------- Sparkline ---------- */
+  function animateSpark(){
+    var line = document.getElementById("heroSpark");
+    if(!line) return;
+    if(prefersReduced){ line.style.strokeDashoffset = 0; return; }
+    line.style.strokeDashoffset = 0;
+  }
+
+  /* ---------- Reveal on scroll ---------- */
+  var revealEls = document.querySelectorAll(".reveal");
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add("in");
+          /* anims internes des blocs révélés */
+          e.target.querySelectorAll("[data-count]").forEach(countUp);
+          e.target.querySelectorAll(".dim-bar i").forEach(function(i){
+            var w = parseFloat(i.getAttribute("data-w") || "0");
+            i.style.width = w + "%";
+          });
+          io.unobserve(e.target);
+        }
+      });
+    }, {threshold: .18});
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add("in"); });
+    document.querySelectorAll("[data-count]").forEach(countUp);
+    document.querySelectorAll(".dim-bar i").forEach(function(i){
+      i.style.width = (parseFloat(i.getAttribute("data-w")||"0")) + "%";
+    });
+  }
+
+  /* ---------- Hero : lancement des animations ---------- */
+  var heroStarted = false;
+  function startHero(){
+    if(heroStarted) return;
+    heroStarted = true;
+    document.querySelectorAll(".hero [data-count]").forEach(countUp);
+    animateGauge();
+    animateBars();
+    animateSpark();
+    /* constats */
+    document.querySelectorAll(".constats [data-count]").forEach(countUp);
+  }
+  if("IntersectionObserver" in window && !prefersReduced){
+    var heroObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ startHero(); heroObs.disconnect(); } });
+    }, {threshold: .3});
+    heroObs.observe(document.querySelector(".hero"));
+  } else {
+    startHero();
+  }
+
+  /* ---------- Formulaire EmailJS ---------- */
+  var form = document.getElementById("contactForm");
+  var status = document.getElementById("contactStatus");
+  var submitBtn = document.getElementById("contactSubmit");
+  if(form && window.emailjs){
+    emailjs.init("8Pui4ZEqxW2jRVF7h");
+    form.addEventListener("submit", function(ev){
+      ev.preventDefault();
+      var site = form.querySelector("#f-site").value.trim();
+      var name = form.querySelector("#f-name").value.trim();
+      var email = form.querySelector("#f-email").value.trim();
+      var question = form.querySelector("#f-question").value.trim();
+      if(!site || !name || !email || !question){
+        status.className = "form-status err";
+        status.textContent = "Merci de remplir tous les champs du formulaire.";
+        return;
+      }
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)){
+        status.className = "form-status err";
+        status.textContent = "L'adresse e-mail ne semble pas valide. Vérifiez-la puis réessayez.";
+        return;
+      }
+      status.className = "form-status loading";
+      status.innerHTML = '<span class="spinner"></span> Envoi en cours…';
+      submitBtn.disabled = true;
+      emailjs.send("service_cy1ytdb", "template_xpo58cv", {
+        site: site,
+        name: name,
+        email: email,
+        question: question
+      }).then(function(){
+        status.className = "form-status ok";
+        status.textContent = "Merci " + name.split(" ")[0] + " — votre message est bien parti. Nous répondons sous 24 h ouvrées.";
+        form.reset();
+      }).catch(function(err){
+        status.className = "form-status err";
+        status.textContent = "L'envoi a échoué (problème de réseau ou de serveur). Réessayez dans quelques instants, ou écrivez-nous directement.";
+        console.error("EmailJS error:", err);
+      }).finally(function(){
+        submitBtn.disabled = false;
+      });
+    });
+  } else if(form){
+    form.addEventListener("submit", function(ev){
+      ev.preventDefault();
+      status.className = "form-status err";
+      status.textContent = "Le service d'envoi n'est pas disponible sur cette page (EmailJS non chargé).";
+    });
+  }
+})();
+</script>
+</body>
+</html>
