@@ -5,6 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculateur de ROI IA — Audit gratuit en 10 questions | ROI·IA</title>
 <meta name="description" content="Audit de maturité IA gratuit en 10 questions : score sur 100, estimation de vos gains ou pertes en euros par mois, 3 recommandations personnalisées. Pour PME de 10 à 200 salariés.">
+<meta property="og:title" content="ROI·IA — Calculateur de ROI IA">
+<meta property="og:description" content="Calculateur et audit de maturité IA gratuit en 10 questions, avec estimation des gains ou pertes en euros par mois. Rapport PDF à partir de 49 €.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "ROI·IA — Calculateur de ROI IA",
+  "description": "Calculateur et audit de maturité IA gratuit en 10 questions, avec estimation des gains ou pertes en euros par mois. Rapport PDF à partir de 49 €.",
+  "offers": {
+    "@type": "Offer",
+    "priceCurrency": "EUR",
+    "price": "49",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -265,6 +284,12 @@ footer{border-top:1px solid var(--border);background:rgba(12,24,21,.6);padding:3
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+  /* Révélation progressive au scroll (non intrusive) */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.visible{opacity:1;transform:none}
+  @media (prefers-reduced-motion: reduce){.reveal{opacity:1;transform:none;transition:none}}
+  @media print{.reveal{opacity:1!important;transform:none!important}}
 </style>
 </head>
 <body>
@@ -288,7 +313,7 @@ footer{border-top:1px solid var(--border);background:rgba(12,24,21,.6);padding:3
 </header>
 
 <!-- ============ QUIZ ============ -->
-<section class="quiz-sec" id="quiz">
+<section class="quiz-sec reveal" id="quiz">
   <div class="wrap">
     <div class="quiz-head">
       <span class="quiz-count">Question <b id="qCount">1</b>/10</span>
@@ -309,7 +334,7 @@ footer{border-top:1px solid var(--border);background:rgba(12,24,21,.6);padding:3
 </section>
 
 <!-- ============ RÉSULTATS ============ -->
-<section class="results-sec" id="resultats">
+<section class="results-sec reveal" id="resultats">
   <div class="wrap">
     <div class="results-head">
       <h1>Votre diagnostic de maturité ROI</h1>
@@ -398,7 +423,7 @@ footer{border-top:1px solid var(--border);background:rgba(12,24,21,.6);padding:3
     </div>
 
     <!-- CTA offres -->
-    <div class="cta-2">
+    <div class="cta-2 reveal">
       <div class="cta-offer">
         <h3>Rapport PDF complet</h3>
         <p class="p">49&nbsp;€ <small>paiement unique</small></p>
@@ -1077,6 +1102,23 @@ if(answers.some(function(v){ return v !== null; })){
   current = firstNull === -1 ? 0 : firstNull;
 }
 render();
+})();
+</script>
+<script>
+/* Révélation au scroll — IntersectionObserver, fallback si absent */
+(function(){
+  var reveals = document.querySelectorAll(".reveal");
+  if(!reveals.length) return;
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add("visible"); io.unobserve(entry.target); }
+      });
+    }, {threshold: .12});
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add("visible"); });
+  }
 })();
 </script>
 </body>
