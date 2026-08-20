@@ -1,7 +1,7 @@
 window.CHATBOT_CONFIG = {
   "name": "ROI·IA",
   "subtitle": "Votre assistant d'audit IA",
-  "accent": "#14b8a6",
+  "accent": "#10B981",
   "welcome": "Bonjour ! 👋 Je suis l'assistant ROI·IA. Score de maturité, estimation de vos gains en euros, rapport 49 €, pack direction 99 € : je vous réponds en 30 secondes.",
   "quick": [
     "L'audit est vraiment gratuit ?",
